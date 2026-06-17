@@ -67,13 +67,19 @@
         <div v-for="a in store.alarms.slice(0, 10)" :key="a.id"
           class="flex justify-between text-xs bg-gray-800 rounded p-2 mb-1"
           :class="{ 'border-l-4 border-red-500': a.level === 'critical', 'border-l-4 border-yellow-500': a.level === 'warning' }">
-          <span>{{ a.message }}</span>
-          <div class="flex gap-2">
+          <div class="flex items-center gap-2 min-w-0">
+            <span v-if="a.escalationLevel > 0" class="text-orange-400 font-bold shrink-0">Lv.{{ a.escalationLevel }}</span>
+            <span class="truncate">{{ a.message }}</span>
+          </div>
+          <div class="flex gap-2 shrink-0">
             <span class="text-gray-500">{{ new Date(a.timestamp).toLocaleTimeString() }}</span>
             <button v-if="!a.acknowledged" @click="store.acknowledgeAlarm(a.id)" class="text-blue-400 hover:underline">确认</button>
           </div>
         </div>
       </div>
+
+      <!-- Escalation Board -->
+      <EscalationBoard />
     </div>
   </div>
 </template>
@@ -82,6 +88,7 @@
 import { onMounted, onUnmounted } from 'vue'
 import { useModbusStore } from './store/modbus'
 import TrendChart from './components/TrendChart.vue'
+import EscalationBoard from './components/EscalationBoard.vue'
 
 const store = useModbusStore()
 let timer: number | null = null
@@ -97,5 +104,5 @@ function stopPoll() {
 }
 
 onMounted(() => store.initMockDevices())
-onUnmounted(() => stopPoll())
+onUnmounted(() => { stopPoll(); store.stopEscalationChecker() })
 </script>

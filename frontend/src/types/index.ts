@@ -17,6 +17,16 @@ export interface Device {
   registers: ModbusRegister[]
 }
 
+export interface EscalationRecord {
+  fromLevel: Alarm['level']
+  toLevel: Alarm['level']
+  escalationLevel: number
+  timestamp: number
+  responsiblePerson: string
+  responsibleRole: string
+  reason: string
+}
+
 export interface Alarm {
   id: string
   deviceId: string
@@ -25,4 +35,9 @@ export interface Alarm {
   level: 'info' | 'warning' | 'critical'
   timestamp: number
   acknowledged: boolean
+  escalationLevel: number
+  escalatedAt: number | null
+  responsiblePerson: string
+  responsibleRole: string
+  escalationHistory: EscalationRecord[]
 }
